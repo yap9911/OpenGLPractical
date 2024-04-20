@@ -1,15 +1,6 @@
 package com.example.openglpractical;
 
-import android.content.Context;
-import android.opengl.GLES20;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-
-import glkit.BufferUtils;
-import glkit.ShaderProgram;
-import glkit.ShaderUtils;
+import com.example.openglpractical.glkit.ShaderProgram;
 
 //public class Square {
 //

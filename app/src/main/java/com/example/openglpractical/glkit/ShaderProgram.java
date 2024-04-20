@@ -1,4 +1,4 @@
-package glkit;
+package com.example.openglpractical.glkit;
 
 import android.graphics.Color;
 import android.graphics.PointF;

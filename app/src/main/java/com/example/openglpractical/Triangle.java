@@ -1,6 +1,6 @@
 package com.example.openglpractical;
 
-import static glkit.ShaderUtils.readShaderFileFromRawResource;
+import static com.example.openglpractical.glkit.ShaderUtils.readShaderFileFromRawResource;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -8,8 +8,8 @@ import android.opengl.GLES20;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import glkit.BufferUtils;
-import glkit.ShaderProgram;
+import com.example.openglpractical.glkit.BufferUtils;
+import com.example.openglpractical.glkit.ShaderProgram;
 
 public class Triangle {
 

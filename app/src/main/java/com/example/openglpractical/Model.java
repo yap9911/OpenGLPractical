@@ -10,8 +10,8 @@ import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.Map;
 
-import glkit.BufferUtils;
-import glkit.ShaderProgram;
+import com.example.openglpractical.glkit.BufferUtils;
+import com.example.openglpractical.glkit.ShaderProgram;
 
 public class Model {
 

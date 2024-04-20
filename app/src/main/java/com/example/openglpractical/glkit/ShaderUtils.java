@@ -1,4 +1,4 @@
-package glkit;
+package com.example.openglpractical.glkit;
 
 import android.content.Context;
 import android.content.res.AssetManager;

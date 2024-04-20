@@ -1,14 +1,11 @@
 package com.example.openglpractical;
 
 
-import static java.security.AccessController.getContext;
-
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.renderscript.Float3;
 import android.renderscript.Matrix4f;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,8 +13,8 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import glkit.ShaderProgram;
-import glkit.ShaderUtils;
+import com.example.openglpractical.glkit.ShaderProgram;
+import com.example.openglpractical.glkit.ShaderUtils;
 
 public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
