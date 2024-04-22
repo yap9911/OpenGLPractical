@@ -42,7 +42,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         try {
 
             System.out.println("in openglrenderer obj loader");
-            objLoader = new ObjLoader(context, "mushroom.obj", "mushroom.mtl");
+            objLoader = new ObjLoader(context, "tree.obj", "tree.mtl");
             System.out.println("finish Objloader class");
 
             List<Float> verticesList = objLoader.getVertices();
@@ -97,15 +97,14 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 //        System.out.println(indicesArray[indicesList.size()-1]);
 
 
-        ShaderProgram shader = new ShaderProgram(
+        shader = new ShaderProgram(
                     ShaderUtils.readShaderFileFromRawResource(context,
                             R.raw.simple_vertex_shader),
                     ShaderUtils.readShaderFileFromRawResource(context,
                             R.raw.simple_fragment_shader)
             );
 
-            // Create and configure the model object
-
+        // Create and configure the model object
         //load materialsmap
         //the model colorspervertices got problem
         //treeModel = new Model("tree", shader, verticesArray, indicesArray, materialsMap);
@@ -122,8 +121,6 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         lastTimeMillis = System.currentTimeMillis();
 
         System.out.println("finish onsurfacecreate");
-
-
 
     }
 
@@ -161,7 +158,6 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         lastTimeMillis = currentTimeMillis; //update last time with current time
 
         //System.out.println("finish draw frame");
-
 
     }
 

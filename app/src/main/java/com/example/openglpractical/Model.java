@@ -1,6 +1,7 @@
 package com.example.openglpractical;
 
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.renderscript.Float3;
 import android.renderscript.Matrix4f;
 
@@ -32,6 +33,7 @@ public class Model {
 
     private ShortBuffer indexBuffer;
     private int indexBufferId;
+    private int vaoId;
 
     protected Float3 position = new Float3(0f, 0f, 0f);   //translation
     protected float rotationX  = 0.0f;    //rotation
@@ -41,10 +43,7 @@ public class Model {
 
     //viewing transformation
     protected Matrix4f camera = new Matrix4f();
-
     protected Matrix4f projection = new Matrix4f();
-
-
 
     //constructor
     //public Model(String name, ShaderProgram shader, float[] vertices, short[] indices, Map<String, ObjLoader.Material> materials) {
@@ -55,11 +54,10 @@ public class Model {
         this.shader = shader;
         this.vertices = Arrays.copyOfRange(vertices, 0, vertices.length);
         this.indices = Arrays.copyOfRange(indices, 0, indices.length);
-        //this.materials = materials; // Add this line to store the materials map
-
 
         setupVertexBuffer();
         setupIndexBuffer();
+        setupVAO();
     }
 
 
@@ -120,6 +118,25 @@ public class Model {
                 indexBuffer, GLES20.GL_STATIC_DRAW);
     }
 
+    private void setupVAO() {
+        IntBuffer vaoBuffer = IntBuffer.allocate(1);
+        GLES30.glGenVertexArrays(1, vaoBuffer);
+        vaoId = vaoBuffer.get(0);
+
+        GLES30.glBindVertexArray(vaoId);
+
+        // Associate vertex attribute data with VAO
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vertexBufferId);
+        GLES30.glVertexAttribPointer(0, COORDS_PER_VERTEX, GLES30.GL_FLOAT, false, vertexStride, 0);
+        GLES30.glEnableVertexAttribArray(0);
+
+        // Bind index buffer
+        GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+
+        // Unbind VAO
+        GLES30.glBindVertexArray(0);
+    }
+
     //sequence : translation -> rotaton -> scaling
     public Matrix4f modelMatrix() {
         Matrix4f mat = new Matrix4f(); // make a new identity 4x4 matrix
@@ -146,30 +163,20 @@ public class Model {
 
         shader.setUniformMatrix("u_ProjectionMatrix", projection);
 
-        // Apply material properties if available
-//        if (materials != null && currentMaterial != null) {
-//            shader.setUniformVector3("u_AmbientColor", currentMaterial.getAmbientColor());
-//            shader.setUniformVector3("u_DiffuseColor", currentMaterial.getDiffuseColor());
-//            shader.setUniformVector3("u_SpecularColor", currentMaterial.getSpecularColor());
-//            // You may need to set additional material properties based on your shader program
-//        }
-
+        GLES30.glBindVertexArray(vaoId); // Bind VAO
 
         shader.enableVertexAttribute("a_Position");
         shader.setVertexAttribute("a_Position", COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, 0);
 
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-        GLES20.glDrawElements(
-                GLES20.GL_TRIANGLES,        // mode
-                indices.length,             // count
-                GLES20.GL_UNSIGNED_SHORT,   // type
-                0);                         // offset
+        // Draw
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
 
         shader.disableVertexAttribute("a_Position");
 
+        GLES30.glBindVertexArray(0); // Unbind VAO
+
         shader.end();
     }
+
 
 }
