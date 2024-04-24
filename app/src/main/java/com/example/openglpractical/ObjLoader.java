@@ -3,8 +3,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -200,26 +198,26 @@ public class ObjLoader {
         return materials;
     }
 
-    public static void main(String[] args) {
-        try {
-            System.out.println("in oObjLoader main");
-
-            ObjLoader objLoader = new ObjLoader(context, "tree.obj", "tree.mtl");
-            List<Float> vertices = objLoader.getVertices();
-            List<Float> texCoords = objLoader.getTexCoords();
-            List<Float> normals = objLoader.getNormals();
-            List<Integer> indices = objLoader.getIndices();
-            Map<String, Material> materials = objLoader.getMaterials();
-
-            // Use the loaded data as needed
-            System.out.println("Vertices: " + vertices);
-            System.out.println("TexCoords: " + texCoords);
-            System.out.println("Normals: " + normals);
-            System.out.println("Indices: " + indices);
-            System.out.println("Materials: " + materials);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        try {
+//            System.out.println("in oObjLoader main");
+//
+//            ObjLoader objLoader = new ObjLoader(context, "tree.obj", "tree.mtl");
+//            List<Float> vertices = objLoader.getVertices();
+//            List<Float> texCoords = objLoader.getTexCoords();
+//            List<Float> normals = objLoader.getNormals();
+//            List<Integer> indices = objLoader.getIndices();
+//            Map<String, Material> materials = objLoader.getMaterials();
+//
+//            // Use the loaded data as needed
+//            System.out.println("Vertices: " + vertices);
+//            System.out.println("TexCoords: " + texCoords);
+//            System.out.println("Normals: " + normals);
+//            System.out.println("Indices: " + indices);
+//            System.out.println("Materials: " + materials);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
 
