@@ -17,7 +17,11 @@ import com.example.openglpractical.glkit.ShaderProgram;
 public class Model {
 
     private static final int COORDS_PER_VERTEX = 3;
-    private static final int COLORS_PER_VERTEX = 0;
+    private static final int TEXCOORDS_PER_VERTEX = 2;
+    private static final int NORMALS_PER_VERTEX = 3;
+
+    // private static final int COLORS_PER_VERTEX = 4;
+
     private static final int SIZE_OF_FLOAT = 4;
     private static final int SIZE_OF_SHORT = 2;
 
@@ -32,7 +36,9 @@ public class Model {
     private int vertexStride;
 
     private ShortBuffer indexBuffer;
-    private int indexBufferId;
+    protected int indexBufferId;
+
+    // Vao
     private int vaoId;
 
     protected Float3 position = new Float3(0f, 0f, 0f);   //translation
@@ -44,6 +50,9 @@ public class Model {
     //viewing transformation
     protected Matrix4f camera = new Matrix4f();
     protected Matrix4f projection = new Matrix4f();
+
+    //texture
+    private int textureName = 0;
 
     //constructor
     //public Model(String name, ShaderProgram shader, float[] vertices, short[] indices, Map<String, ObjLoader.Material> materials) {
@@ -84,6 +93,11 @@ public class Model {
     public void setProjection(Matrix4f mat) {
         projection.load(mat);
     }
+
+    public void setTexture(int textureName) {
+        this.textureName = textureName;
+    }
+
     public void setCamera(Matrix4f mat) {
         camera.load(mat);  //to load martix (means multipying the new input to the camera)
         //like camera = mat
@@ -101,7 +115,7 @@ public class Model {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId);
         GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertices.length * SIZE_OF_FLOAT, vertexBuffer,
                 GLES20.GL_STATIC_DRAW);
-        vertexStride = (COORDS_PER_VERTEX + COLORS_PER_VERTEX) * SIZE_OF_FLOAT; // 4 bytes per vertex
+        vertexStride = (COORDS_PER_VERTEX) * SIZE_OF_FLOAT; // 4 bytes per vertex
     }
 
     private void setupIndexBuffer() {
@@ -149,7 +163,7 @@ public class Model {
     }
 
 
-    public void draw( long dt) {
+    public void draw(long dt) {
 
         shader.begin();
 
@@ -158,25 +172,47 @@ public class Model {
         //viewing (camera) --> camera * modelMatrix() ==> camera matrix
         //modelMatrix() --> object/3D object (model-->world) ==> modelMatrix
         //both are 4*4 matrix, same format only can multiply
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1); // activate a texture slot no. 1
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureName); // load a 2D texture
+        // based on the textureName
+        shader.setUniformi("u_Texture", 1); // texture slot number 1
+
         camera.multiply(modelMatrix());
         shader.setUniformMatrix("u_ModelViewMatrix", camera);
-
         shader.setUniformMatrix("u_ProjectionMatrix", projection);
-
-        GLES30.glBindVertexArray(vaoId); // Bind VAO
-
         shader.enableVertexAttribute("a_Position");
         shader.setVertexAttribute("a_Position", COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, 0);
 
-        // Draw
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
+        // shader.enableVertexAttribute("a_Color");
+        // shader.setVertexAttribute("a_Color", COLORS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride,
+        //        COORDS_PER_VERTEX * SIZE_OF_FLOAT);
 
+        shader.enableVertexAttribute("a_TexCoord");
+        shader.setVertexAttribute("a_TexCoord", TEXCOORDS_PER_VERTEX, GLES20.GL_FLOAT,
+                false, vertexStride, (COORDS_PER_VERTEX ) * SIZE_OF_FLOAT);
+
+        shader.enableVertexAttribute("a_Normal");
+        shader.setVertexAttribute("a_Normal", NORMALS_PER_VERTEX, GLES20.GL_FLOAT, false,
+                vertexStride, (COORDS_PER_VERTEX + TEXCOORDS_PER_VERTEX) *
+                        SIZE_OF_FLOAT);
+
+        injectData(shader);
+
+        GLES20.glDrawElements(
+                GLES20.GL_TRIANGLES, // mode
+                indices.length, // count
+                GLES20.GL_UNSIGNED_SHORT, // type
+                0); // offset
         shader.disableVertexAttribute("a_Position");
-
+        // shader.disableVertexAttribute("a_Color");
+        shader.disableVertexAttribute("a_TexCoord");
         GLES30.glBindVertexArray(0); // Unbind VAO
-
         shader.end();
     }
 
+    private void injectData(ShaderProgram shader) {
+
+    }
 
 }
