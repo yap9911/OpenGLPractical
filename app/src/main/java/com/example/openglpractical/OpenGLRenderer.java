@@ -116,7 +116,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
         // Set the position, rotation, and scale of the model if needed
             treeModel.setPosition(new Float3(0.0f, 0.0f, 0.0f));
-            treeModel.setRotationX(270.0f);
+            treeModel.setRotationX(0.0f);
             treeModel.setRotationY(0.0f);
             treeModel.setRotationZ(0.0f);
             treeModel.setScale(scaleFactor);
@@ -158,7 +158,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
         Matrix4f camera2 = new Matrix4f();
         camera2.translate(0.0f, 0.0f, -6.0f);
-        camera2.rotate(270.0f, 1.0f, 0.0f, 0.0f); // Rotate the camera to view from the side
+        //camera2.rotate(180.0f, 1.0f, 0.0f, 0.0f); // Rotate the camera to view from the side
+        //camera2.rotate(180.0f, 0.0f, 1.0f, 0.0f); // Rotate the camera to view from the side
         treeModel.setCamera(camera2);
 
         treeModel.draw();
@@ -233,14 +234,17 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                     float dy = y - previousY;
                     // Calculate rotation angle based on movement of two fingers
                     float angleRadians = (float) Math.atan2(dy1, dx1);
+//                    if (angleRadians < 0) {
+//                        angleRadians += 2 * Math.PI; // Convert negative angle to positive
+//                    }
                     float angleDegrees = (float) Math.toDegrees(angleRadians);
-                    float sensitivity = 0.2f;
+                    float sensitivity = 0.5f;
                     rotationAngleX += dy * sensitivity;
                     rotationAngleY += dx * sensitivity;
 
                     treeModel.setRotationX(angleDegrees);
                     treeModel.setRotationY(angleDegrees);
-                    treeModel.setRotationZ(angleDegrees);
+                    //treeModel.setRotationZ(angleDegrees);
 
                     // Update previous touch coordinates for rotation
                     previousX = x;
