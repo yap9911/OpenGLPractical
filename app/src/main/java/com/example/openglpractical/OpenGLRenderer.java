@@ -232,23 +232,24 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                     //rotation
                     float dx = x - previousX;
                     float dy = y - previousY;
-                    // Calculate rotation angle based on movement of two fingers
-                    float angleRadians = (float) Math.atan2(dy1, dx1);
-//                    if (angleRadians < 0) {
-//                        angleRadians += 2 * Math.PI; // Convert negative angle to positive
-//                    }
-                    float angleDegrees = (float) Math.toDegrees(angleRadians);
-                    float sensitivity = 0.5f;
-                    rotationAngleX += dy * sensitivity;
-                    rotationAngleY += dx * sensitivity;
+                    float angleRadiansX = (float) Math.atan2(dy, dx);
+                    if (angleRadiansX < 0) {
+                        angleRadiansX += 2 * Math.PI;
+                    }
+                    float angleDegreesX = (float) Math.toDegrees(angleRadiansX);
 
-                    treeModel.setRotationX(angleDegrees);
-                    treeModel.setRotationY(angleDegrees);
-                    //treeModel.setRotationZ(angleDegrees);
+                    float angleRadiansY = (float) Math.atan2(dx, dy);
+                    if (angleRadiansY < 0) {
+                        angleRadiansY += 2 * Math.PI;
+                    }
+                    float angleDegreesY = (float) Math.toDegrees(angleRadiansY);
 
-                    // Update previous touch coordinates for rotation
-                    previousX = x;
-                    previousY = y;
+                    float sensitivity = 0.02f;
+                    rotationAngleX += angleDegreesX * sensitivity;
+                    rotationAngleY += angleDegreesY * sensitivity;
+
+                    treeModel.setRotationX(rotationAngleX);
+                    treeModel.setRotationY(rotationAngleY);
                 }
                 break;
         }
