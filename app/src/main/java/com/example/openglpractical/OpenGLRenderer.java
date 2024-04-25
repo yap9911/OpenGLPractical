@@ -2,10 +2,13 @@ package com.example.openglpractical;
 
 
 import android.content.Context;
+import android.graphics.Camera;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.renderscript.Float3;
 import android.renderscript.Matrix4f;
+import android.util.Log;
+import android.view.MotionEvent;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,9 +36,19 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
     private Model treeModel;
 
+    private float previousX, previousY;
+    private float rotationAngleX;
+    private float rotationAngleY;
+    private float scaleFactor = 1.0f;
+    private Float3 translation = new Float3(0.0f, 0.0f, 0.0f);
+
+    private static final int INVALID_POINTER_ID = -1;
+    private float previousX2, previousY2;
+    private int activePointerId1 = INVALID_POINTER_ID, activePointerId2 = INVALID_POINTER_ID;
+    private float initialDistance = 0.0f;
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
 
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         System.out.println("on surface created");
@@ -78,23 +91,14 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
             float[] verticesArray = new float[verticesList.size()];
             for (int i = 0; i < verticesList.size(); i++) {
                 verticesArray[i] = verticesList.get(i);
-                //System.out.println(verticesArray[i]);
 
             }
 
             short[] indicesArray = new short[indicesList.size()];
             for (int i = 0; i < indicesList.size(); i++) {
                 indicesArray[i] = indicesList.get(i).shortValue();
-                //System.out.println(indicesArray[i]);
 
             }
-//            System.out.println("the first vertices is");
-//        System.out.println(verticesArray[0]);
-//        System.out.println(verticesArray[verticesList.size()-1]);
-//
-//        System.out.println("the first indices is");
-//        System.out.println(indicesArray[0]);
-//        System.out.println(indicesArray[indicesList.size()-1]);
 
 
         shader = new ShaderProgram(
@@ -112,10 +116,10 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
         // Set the position, rotation, and scale of the model if needed
             treeModel.setPosition(new Float3(0.0f, 0.0f, 0.0f));
-            treeModel.setRotationX(0.0f);
+            treeModel.setRotationX(270.0f);
             treeModel.setRotationY(0.0f);
             treeModel.setRotationZ(0.0f);
-            treeModel.setScale(1.0f);
+            treeModel.setScale(scaleFactor);
 
         //extract the current time of the system in miliseconds
         lastTimeMillis = System.currentTimeMillis();
@@ -139,7 +143,6 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
             //perspective setting
             perspective.loadPerspective(85.0f, aspectRatio, 1.0f, 150.0f); //(field of view, aspect ratio, near z, far z)
 
-            //then uodate to your square
             treeModel.setProjection(perspective);
         }
     }
@@ -152,40 +155,101 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glEnable(GLES20.GL_CULL_FACE);
-        //obtain the latest time of the system
-        long currentTimeMillis = System.currentTimeMillis();
-        updateWithDelta(currentTimeMillis - lastTimeMillis);
-        lastTimeMillis = currentTimeMillis; //update last time with current time
 
-        //System.out.println("finish draw frame");
-
-    }
-
-    public void updateWithDelta(long dt) {
-
-        final float secsPerMove = 2.0f * ONE_SEC;
-
-        float movement = (float)(Math.sin(System.currentTimeMillis() * 2 * Math.PI /
-                secsPerMove));
-
-        Matrix4f camera = new Matrix4f();
-        //adjustment to camera //since its 4*4, they offer the translation, rotate...methods
-        //camera.translate(0.0f, (float)(-1.0f * movement), 0.0f);
-        //if the z value is 0.0, its too front, so we move further away to -5.0 to be able to see the square
-        camera.translate(0.0f, (float)(-1.0f * movement), -5.0f);
-        camera.rotate(360.0f * movement, 0.0f, 0.0f, 1.0f);
-        camera.scale(movement, movement, movement);
-        //square.setCamera(camera);
-        //square.draw(dt);
-
-        //this camera2 will make the cube rotate in position
         Matrix4f camera2 = new Matrix4f();
-        camera2.translate(0.0f, 0.0f, -5.0f);
+        camera2.translate(0.0f, 0.0f, -6.0f);
+        camera2.rotate(270.0f, 1.0f, 0.0f, 0.0f); // Rotate the camera to view from the side
         treeModel.setCamera(camera2);
-        treeModel.setRotationY((float)( treeModel.rotationY + Math.PI * dt / (ONE_SEC * 0.1f) ));
-        treeModel.setRotationZ((float)( treeModel.rotationZ + Math.PI * dt / (ONE_SEC * 0.1f) ));
-        treeModel.draw(dt);
+
+        treeModel.draw();
+
     }
+
+    public void handleTouch(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                //when one finger touch screen
+                activePointerId1 = event.getPointerId(0);
+                //save the current model x and y coordinates before transformtion
+                previousX = x;
+                previousY = y;
+                System.out.println(event.getPointerCount());
+                break;
+
+            case MotionEvent.ACTION_POINTER_DOWN:
+                //when two fingers touch screen
+                previousX = x;
+                previousY = y;
+                if (event.getPointerCount() == 2) {
+                    float dx = event.getX(0) - event.getX(1);
+                    float dy = event.getY(0) - event.getY(1);
+                    initialDistance = (float) Math.sqrt(dx * dx + dy * dy);
+                }
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                if (event.getPointerCount() == 1) {
+
+                    //translation
+                    float dx = x - previousX;
+                    float dy = y - previousY;
+
+                    float sensitivity = 0.05f; // Adjust sensitivity as needed
+
+
+//                    System.out.println("treeModel.camera");
+//                    System.out.println(treeModel.position.x);
+//                    System.out.println(treeModel.camera);
+
+
+                    // Translate the model along X and Y axes based on finger movement
+                    Float3 newPosition = new Float3(
+                            treeModel.position.x + dx * sensitivity,
+                            treeModel.position.y - dy * sensitivity,
+                            treeModel.position.z
+                    );
+                    treeModel.setPosition(newPosition);
+                    // Update previous touch coordinates for translation
+                    previousX = x;
+                    previousY = y;
+
+
+                } else if (event.getPointerCount() == 2) {
+
+                    //scaling
+                    float dx1 = event.getX(0) - event.getX(1);
+                    float dy1 = event.getY(0) - event.getY(1);
+                    float currentDistance = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
+                    float scaleFactor = currentDistance / initialDistance; // Calculate scaling factor
+                    System.out.println("Scale Factor: " + scaleFactor);
+
+                    treeModel.setScale(scaleFactor);
+
+                    //rotation
+                    float dx = x - previousX;
+                    float dy = y - previousY;
+                    // Calculate rotation angle based on movement of two fingers
+                    float angleRadians = (float) Math.atan2(dy1, dx1);
+                    float angleDegrees = (float) Math.toDegrees(angleRadians);
+                    float sensitivity = 0.2f;
+                    rotationAngleX += dy * sensitivity;
+                    rotationAngleY += dx * sensitivity;
+
+                    treeModel.setRotationX(angleDegrees);
+                    treeModel.setRotationY(angleDegrees);
+                    treeModel.setRotationZ(angleDegrees);
+
+                    // Update previous touch coordinates for rotation
+                    previousX = x;
+                    previousY = y;
+                }
+                break;
+        }
+    }
+
 
     public OpenGLRenderer(Context context) {
         this.context = context;

@@ -163,9 +163,11 @@ public class Model {
     }
 
 
-    public void draw(long dt) {
+//    public void draw(long dt) {
+    public void draw() {
 
-        shader.begin();
+
+    shader.begin();
 
         //have to multiply with the modelviewmatrix(the translation, scaling and rotation)
         //have to multiply the modelmatrix with the camera
