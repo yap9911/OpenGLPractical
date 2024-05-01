@@ -18,6 +18,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.example.openglpractical.glkit.ShaderProgram;
 import com.example.openglpractical.glkit.ShaderUtils;
+import com.example.openglpractical.glkit.TextureUtils;
 
 public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
@@ -102,11 +103,13 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
 
         shader = new ShaderProgram(
-                    ShaderUtils.readShaderFileFromRawResource(context,
-                            R.raw.simple_vertex_shader),
-                    ShaderUtils.readShaderFileFromRawResource(context,
-                            R.raw.simple_fragment_shader)
-            );
+            ShaderUtils.readShaderFileFromRawResource(context,
+                    R.raw.simple_vertex_shader),
+            ShaderUtils.readShaderFileFromRawResource(context,
+                    R.raw.simple_fragment_shader)
+        );
+
+        int treeTexture = TextureUtils.loadTexture(context, R.drawable.tree);
 
         // Create and configure the model object
         //load materialsmap
@@ -115,11 +118,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         treeModel = new Model("tree", shader, verticesArray, indicesArray);
 
         // Set the position, rotation, and scale of the model if needed
-            treeModel.setPosition(new Float3(0.0f, 0.0f, 0.0f));
-            treeModel.setRotationX(0.0f);
-            treeModel.setRotationY(0.0f);
-            treeModel.setRotationZ(0.0f);
-            treeModel.setScale(scaleFactor);
+        treeModel.setPosition(new Float3(0.0f, 0.0f, 0.0f));
+        treeModel.setRotationX(0.0f);
+        treeModel.setRotationY(0.0f);
+        treeModel.setRotationZ(0.0f);
+        treeModel.setScale(scaleFactor);
+        treeModel.setTexture(treeTexture);
 
         //extract the current time of the system in miliseconds
         lastTimeMillis = System.currentTimeMillis();

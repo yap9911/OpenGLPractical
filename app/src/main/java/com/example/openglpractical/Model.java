@@ -215,7 +215,12 @@ public class Model {
     }
 
     private void injectData(ShaderProgram shader) {
-
+        shader.setUniformf("u_Light.Color", 1.0f, 1.0f, 1.0f);
+        shader.setUniformf("u_Light.AmbientIntensity", 0.7f);
+        shader.setUniformf("u_Light.DiffuseIntensity", 0.7f);
+        shader.setUniformf("u_Light.Direction", 0.0f, -0.3f, -1.2f);
+        shader.setUniformf("u_Light.SpecularIntensity", 1.0f);
+        shader.setUniformf("u_Light.Shininess", 5.0f);
     }
 
 }
