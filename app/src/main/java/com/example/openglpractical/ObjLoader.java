@@ -13,15 +13,16 @@ import java.util.Map;
 
 public class ObjLoader {
     private List<Float> vertices = new ArrayList<>();
-    private List<Float> texCoords = new ArrayList<>();
-    private List<Float> normals = new ArrayList<>();
+    private List<float[]> verticesArrayList = new ArrayList<>();
+    private List<float[]> texCoordsArrayList = new ArrayList<>();
+    private List<float[]> normalsArrayList = new ArrayList<>();
     private List<Integer> indices = new ArrayList<>();
     private Map<String, Material> materials = new HashMap<>();
 
     private static Context context;
 
     public ObjLoader(Context context, String objFilePath, String mtlFilePath) throws IOException {
-        System.out.println("in ObjLaader");
+        System.out.println("in ObjLoader");
         this.context = context;
         loadObjFile(objFilePath);
         loadMtlFile(mtlFilePath);
@@ -30,53 +31,53 @@ public class ObjLoader {
 
 
     private void loadMtlFile(String mtlFilePath) throws IOException {
-        System.out.println("in oObjLoader loadingmtlfile");
+        System.out.println("in ObjLoader loading mtl file");
 
-            AssetManager am = context.getAssets();
-            InputStream is = am.open(mtlFilePath);
+        AssetManager am = context.getAssets();
+        InputStream is = am.open(mtlFilePath);
 
-            InputStreamReader isr = new InputStreamReader(is);
-            // Wrap the InputStreamReader with a BufferedReader for efficient reading
-            BufferedReader reader = new BufferedReader(isr);
-            Material currentMaterial = null;
-            //System.out.println(reader);
+        InputStreamReader isr = new InputStreamReader(is);
+        // Wrap the InputStreamReader with a BufferedReader for efficient reading
+        BufferedReader reader = new BufferedReader(isr);
+        Material currentMaterial = null;
+        //System.out.println(reader);
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                //System.out.println(line);
+        String line;
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            //System.out.println(line);
 
-                String[] parts = line.split("\\s+");
+            String[] parts = line.split("\\s+");
 
-                if (parts.length == 0 || parts[0].startsWith("#")) {
-                    continue; // Skip comments and empty lines
-                }
-
-                if (parts[0].equals("newmtl")) {
-                    String materialName = parts[1];
-                    currentMaterial = new Material(materialName);
-                    materials.put(materialName, currentMaterial);
-                } else if (currentMaterial != null) {
-                    if (parts[0].equals("Ka")) {
-                        currentMaterial.setAmbientColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-                                Float.parseFloat(parts[3]));
-                    } else if (parts[0].equals("Kd")) {
-                        currentMaterial.setDiffuseColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-                                Float.parseFloat(parts[3]));
-                    } else if (parts[0].equals("Ks")) {
-                        currentMaterial.setSpecularColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-                                Float.parseFloat(parts[3]));
-                    }// Add more properties as needed
-                }
+            if (parts.length == 0 || parts[0].startsWith("#")) {
+                continue; // Skip comments and empty lines
             }
+
+            if (parts[0].equals("newmtl")) {
+                String materialName = parts[1];
+                currentMaterial = new Material(materialName);
+                materials.put(materialName, currentMaterial);
+            } else if (currentMaterial != null) {
+                if (parts[0].equals("Ka")) {
+                    currentMaterial.setAmbientColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+                            Float.parseFloat(parts[3]));
+                } else if (parts[0].equals("Kd")) {
+                    currentMaterial.setDiffuseColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+                            Float.parseFloat(parts[3]));
+                } else if (parts[0].equals("Ks")) {
+                    currentMaterial.setSpecularColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+                            Float.parseFloat(parts[3]));
+                }// Add more properties as needed
+            }
+        }
         System.out.println("finish mtl loader");
 
-            reader.close();
+        reader.close();
 
     }
 
     private void loadObjFile(String objFilePath) throws IOException {
-        System.out.println("in oObjLoader loading obj file");
+        System.out.println("in ObjLoader loading obj file");
 
         AssetManager am = context.getAssets();
         InputStream is = am.open(objFilePath);
@@ -104,21 +105,34 @@ public class ObjLoader {
                 float x = Float.parseFloat(parts[1]);
                 float y = Float.parseFloat(parts[2]);
                 float z = Float.parseFloat(parts[3]);
-                vertices.add(x);
-                vertices.add(y);
-                vertices.add(z);
+
+                // Create an array to hold the vertex coordinates
+                float[] vertex = {x, y, z};
+
+                // Add the array to the ArrayList
+                verticesArrayList.add(vertex);
+
             } else if (parts[0].equals("vt")) {
                 float u = Float.parseFloat(parts[1]);
                 float v = Float.parseFloat(parts[2]);
-                texCoords.add(u);
-                texCoords.add(v);
+
+                // Create an array to hold the texture coordinates
+                float[] texture = {u, v};
+
+                // Add the array to the ArrayList
+                texCoordsArrayList.add(texture);
+
             } else if (parts[0].equals("vn")) {
                 float nx = Float.parseFloat(parts[1]);
                 float ny = Float.parseFloat(parts[2]);
                 float nz = Float.parseFloat(parts[3]);
-                normals.add(nx);
-                normals.add(ny);
-                normals.add(nz);
+
+                // Create an array to hold the normal coordinates
+                float[] normal = {nx, ny, nz};
+
+                // Add the array to the ArrayList
+                normalsArrayList.add(normal);
+
             } else if (parts[0].equals("usemtl")) {
                 String materialName = parts[1];
                 currentMaterial = materials.get(materialName);
@@ -127,19 +141,69 @@ public class ObjLoader {
                     String[] vertexData = parts[i].split("/");
                     int vertexIndex = Integer.parseInt(vertexData[0]) - 1;
                     indices.add(vertexIndex);
+                    float[] vertex = verticesArrayList.get(vertexIndex);
 
-                    if (vertexData.length >= 2) {
+                    if (vertexData.length >= 3 && verticesArrayList.get(vertexIndex).length < 8) {
+
                         int texCoordIndex = Integer.parseInt(vertexData[1]) - 1;
-                        // You can use texture coordinates here if needed
+                        float[] texCoord = texCoordsArrayList.get(texCoordIndex);
+
+                        int normalIndex = Integer.parseInt(vertexData[2]) - 1;
+                        float[] normal = normalsArrayList.get(normalIndex);
+
+                        // Create a new array to hold the combined vertex, texture coordinate, and normal
+                        float[] combinedVertex = new float[vertex.length + texCoord.length + normal.length];
+
+                        // Copy the elements from vertex array
+                        System.arraycopy(vertex, 0, combinedVertex, 0, vertex.length);
+
+                        // Copy the elements from texCoord array
+                        System.arraycopy(texCoord, 0, combinedVertex, vertex.length, texCoord.length);
+
+                        // Copy the elements from normal array
+                        System.arraycopy(normal, 0, combinedVertex, vertex.length + texCoord.length, normal.length);
+
+                        // Update the vertex array in the verticesArrayList
+                        verticesArrayList.set(vertexIndex, combinedVertex);
+
                     }
 
-                    if (vertexData.length >= 3) {
-                        int normalIndex = Integer.parseInt(vertexData[2]) - 1;
-                        // You can use normals here if needed
-                    }
                 }
             }
         }
+
+        for(float[] vertices : verticesArrayList){
+            for(float vertex : vertices){
+                System.out.print(vertex + " ");
+            }
+            System.out.println(); // Move to the next line after printing all elements of the array
+        }
+
+
+        // Calculate the total length needed for the vertices array
+        int totalLength = 0;
+        for (float[] array : verticesArrayList) {
+            totalLength += array.length;
+
+        }
+        System.out.println(totalLength);
+
+        // Create the vertices array with the calculated length
+        float[] verticesArray = new float[totalLength];
+
+        // Copy the elements of each array in verticesArrayList into the vertices array
+        int currentIndex = 0;
+        for (float[] array : verticesArrayList) {
+            System.arraycopy(array, 0, verticesArray, currentIndex, array.length);
+            currentIndex += array.length;
+        }
+
+        // Iterate over the verticesArray and add each element to the vertices ArrayList
+        for (float vertex : verticesArray) {
+            vertices.add(vertex);
+            System.out.println(vertices.size());
+        }
+
         System.out.println("finish obj loader");
 
         reader.close();
@@ -180,14 +244,6 @@ public class ObjLoader {
     // Getter methods for accessing loaded data
     public List<Float> getVertices() {
         return vertices;
-    }
-
-    public List<Float> getTexCoords() {
-        return texCoords;
-    }
-
-    public List<Float> getNormals() {
-        return normals;
     }
 
     public List<Integer> getIndices() {
