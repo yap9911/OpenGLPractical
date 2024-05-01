@@ -115,7 +115,8 @@ public class Model {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId);
         GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertices.length * SIZE_OF_FLOAT, vertexBuffer,
                 GLES20.GL_STATIC_DRAW);
-        vertexStride = (COORDS_PER_VERTEX) * SIZE_OF_FLOAT; // 4 bytes per vertex
+        vertexStride = (COORDS_PER_VERTEX  + TEXCOORDS_PER_VERTEX +
+                NORMALS_PER_VERTEX) * SIZE_OF_FLOAT;
     }
 
     private void setupIndexBuffer() {
