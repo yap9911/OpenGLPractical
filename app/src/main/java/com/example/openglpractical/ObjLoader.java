@@ -47,27 +47,46 @@ public class ObjLoader {
             line = line.trim();
             //System.out.println(line);
 
-            String[] parts = line.split("\\s+");
-
-            if (parts.length == 0 || parts[0].startsWith("#")) {
-                continue; // Skip comments and empty lines
+            // Skip comments and empty lines
+            if (line.isEmpty() || line.startsWith("#")) {
+                continue;
             }
+
+            String[] parts = line.split("\\s+");
 
             if (parts[0].equals("newmtl")) {
                 String materialName = parts[1];
                 currentMaterial = new Material(materialName);
                 materials.put(materialName, currentMaterial);
             } else if (currentMaterial != null) {
-                if (parts[0].equals("Ka")) {
-                    currentMaterial.setAmbientColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+
+                if (parts[0].equals("Ns")) {
+                    currentMaterial.setShininess(Float.parseFloat(parts[1]));
+                } else if (parts[0].equals("Ka")) {
+                    currentMaterial.setAmbientColor(
+                            Float.parseFloat(parts[1]),
+                            Float.parseFloat(parts[2]),
                             Float.parseFloat(parts[3]));
                 } else if (parts[0].equals("Kd")) {
-                    currentMaterial.setDiffuseColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+                    currentMaterial.setDiffuseColor(
+                            Float.parseFloat(parts[1]),
+                            Float.parseFloat(parts[2]),
                             Float.parseFloat(parts[3]));
                 } else if (parts[0].equals("Ks")) {
-                    currentMaterial.setSpecularColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+                    currentMaterial.setSpecularColor(
+                            Float.parseFloat(parts[1]),
+                            Float.parseFloat(parts[2]),
                             Float.parseFloat(parts[3]));
-                }// Add more properties as needed
+                } else if (parts[0].equals("Ni")) {
+                    currentMaterial.setRefractiveIndex(Float.parseFloat(parts[1]));
+                } else if (parts[0].equals("d")) {
+                    currentMaterial.setDissolve(Float.parseFloat(parts[1]));
+                } else if (parts[0].equals("illum")) {
+                    currentMaterial.setIlluminationModel(Integer.parseInt(parts[1]));
+                } else if (parts[0].equals("map_Kd")) {
+                    // Handle texture map file (if needed)
+                }
+                // Add more properties as needed
             }
         }
         System.out.println("finish mtl loader");
@@ -232,10 +251,14 @@ public class ObjLoader {
 
     // Define Material class as needed to store material properties
     static class Material {
-        private String name;
-        private float[] ambientColor = { 0.0f, 0.0f, 0.0f };
-        private float[] diffuseColor = { 1.0f, 1.0f, 1.0f };
-        private float[] specularColor = { 1.0f, 1.0f, 1.0f };
+        public String name;
+        public float[] ambientColor = { 0.0f, 0.0f, 0.0f };
+        public float[] diffuseColor = { 1.0f, 1.0f, 1.0f };
+        public float[] specularColor = { 1.0f, 1.0f, 1.0f };
+        public float shininess = 0.0f;
+        public float refractiveIndex = 1.0f;
+        public float dissolve = 1.0f;
+        public int illuminationModel = 0;
 
         public Material(String name) {
             this.name = name;
@@ -257,6 +280,22 @@ public class ObjLoader {
             specularColor[0] = r;
             specularColor[1] = g;
             specularColor[2] = b;
+        }
+
+        public void setShininess(float shininess) {
+            this.shininess = shininess;
+        }
+
+        public void setRefractiveIndex(float refractiveIndex) {
+            this.refractiveIndex = refractiveIndex;
+        }
+
+        public void setDissolve(float dissolve) {
+            this.dissolve = dissolve;
+        }
+
+        public void setIlluminationModel(int illuminationModel) {
+            this.illuminationModel = illuminationModel;
         }
 
         // Add getters as needed

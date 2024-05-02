@@ -56,13 +56,14 @@ public class Model {
 
     //constructor
     //public Model(String name, ShaderProgram shader, float[] vertices, short[] indices, Map<String, ObjLoader.Material> materials) {
-    public Model(String name, ShaderProgram shader, float[] vertices, short[] indices) {
+    public Model(String name, ShaderProgram shader, float[] vertices, short[] indices, Map<String, ObjLoader.Material> materials ) {
             System.out.println("in Model Class creating model");
         //initialization
         this.name = name;
         this.shader = shader;
         this.vertices = Arrays.copyOfRange(vertices, 0, vertices.length);
         this.indices = Arrays.copyOfRange(indices, 0, indices.length);
+        this.materials = materials;
 
         setupVertexBuffer();
         setupIndexBuffer();
@@ -217,12 +218,27 @@ public class Model {
     }
 
     private void injectData(ShaderProgram shader) {
-        shader.setUniformf("u_Light.Color", 1.0f, 1.0f, 1.0f);
-        shader.setUniformf("u_Light.AmbientIntensity", 0.7f);
-        shader.setUniformf("u_Light.DiffuseIntensity", 0.7f);
-        shader.setUniformf("u_Light.Direction", 0.0f, -0.3f, -1.2f);
-        shader.setUniformf("u_Light.SpecularIntensity", 1.0f);
-        shader.setUniformf("u_Light.Shininess", 5.0f);
+        // Retrieve the material from the materials map based on the model's name
+        ObjLoader.Material material = materials.get(name);
+
+        // Check if the material exists
+        if (material != null) {
+            // Set the uniform variables in the shader using material properties
+            shader.setUniformf("u_Material.AmbientColor", material.ambientColor[0], material.ambientColor[1], material.ambientColor[2]);
+            shader.setUniformf("u_Material.DiffuseColor", material.diffuseColor[0], material.diffuseColor[1], material.diffuseColor[2]);
+            shader.setUniformf("u_Material.SpecularColor", material.specularColor[0], material.specularColor[1], material.specularColor[2]);
+            shader.setUniformf("u_Material.Shininess", material.shininess);
+            shader.setUniformf("u_Material.Dissolve", material.dissolve);
+            shader.setUniformf("u_Light.Direction", 0.0f, -0.5f, -1.0f);
+        }
+
+//        // Set other material-specific properties as needed
+//        shader.setUniformf("u_Light.Color", 1.0f, 1.0f, 1.0f);
+//        shader.setUniformf("u_Light.AmbientIntensity", 0.0f);
+//        shader.setUniformf("u_Light.DiffuseIntensity", 0.64f);
+//        shader.setUniformf("u_Light.Direction", 0.0f, -0.3f, -1.2f);
+//        shader.setUniformf("u_Light.SpecularIntensity", 0.5f);
+//        shader.setUniformf("u_Light.Shininess", 9.6078431f);
     }
 
 }

@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -99,6 +100,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
             }
 
+        Map<String, ObjLoader.Material> materialsMap = objLoader.getMaterials();
 
         shader = new ShaderProgram(
             ShaderUtils.readShaderFileFromRawResource(context,
@@ -113,13 +115,13 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         //load materialsmap
         //the model colorspervertices got problem
         //Model = new Model("tree", shader, verticesArray, indicesArray, materialsMap);
-        ObjModel = new Model("tree", shader, verticesArray, indicesArray);
+        ObjModel = new Model("tree", shader, verticesArray, indicesArray, materialsMap);
 
         // Set the position, rotation, and scale of the model if needed
         ObjModel.setPosition(new Float3(0.0f, 0.0f, 0.0f));
-        ObjModel.setRotationX(0.0f);
-        ObjModel.setRotationY(0.0f);
-        ObjModel.setRotationZ(0.0f);
+        ObjModel.setRotationX(102.0f);
+        ObjModel.setRotationY(180.0f);
+        ObjModel.setRotationZ(255.0f);
         ObjModel.setScale(scaleFactor);
         ObjModel.setTexture(Texture);
 
