@@ -207,9 +207,11 @@ public class Model {
                 indices.length, // count
                 GLES20.GL_UNSIGNED_SHORT, // type
                 0); // offset
+
         shader.disableVertexAttribute("a_Position");
         // shader.disableVertexAttribute("a_Color");
         shader.disableVertexAttribute("a_TexCoord");
+        shader.disableVertexAttribute("a_Normal");
         GLES30.glBindVertexArray(0); // Unbind VAO
         shader.end();
     }
