@@ -202,7 +202,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                     float dx = x - previousX;
                     float dy = y - previousY;
 
-                    float sensitivity = 0.05f; // Adjust sensitivity as needed
+                    float sensitivity = 0.05f;
 
 
 //                    System.out.println("treeModel.camera");
@@ -228,29 +228,51 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                     float dx1 = event.getX(0) - event.getX(1);
                     float dy1 = event.getY(0) - event.getY(1);
                     float currentDistance = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
-                    float scaleFactor = currentDistance / initialDistance; // Calculate scaling factor
-                    System.out.println("Scale Factor: " + scaleFactor);
 
+                    float scaleChange = currentDistance - initialDistance;
+
+                    float sensitivity = 0.005f;
+                    float scaleFactor = 1 + scaleChange * sensitivity;
+
+                    float minScaleFactor = 0.3f;
+                    float maxScaleFactor = 3.0f;
+
+                    //min and max scaling factor
+                    if (scaleFactor < minScaleFactor) {
+                        scaleFactor = minScaleFactor;
+                    }
+                    if (scaleFactor > maxScaleFactor) {
+                        scaleFactor = maxScaleFactor;
+                    }
+
+                    //System.out.println("Scale Factor: " + scaleFactor);
                     treeModel.setScale(scaleFactor);
 
                     //rotation
                     float dx = x - previousX;
                     float dy = y - previousY;
-                    float angleRadiansX = (float) Math.atan2(dy, dx);
-                    if (angleRadiansX < 0) {
-                        angleRadiansX += 2 * Math.PI;
-                    }
-                    float angleDegreesX = (float) Math.toDegrees(angleRadiansX);
+//                    float angleRadiansX = (float) Math.atan2(dy, dx);
+//                    if (angleRadiansX < 0) {
+//                        angleRadiansX += 2 * Math.PI;
+//                    }
+//                    float angleDegreesX = (float) Math.toDegrees(angleRadiansX);
+//
+//                    float angleRadiansY = (float) Math.atan2(dx, dy);
+//                    if (angleRadiansY < 0) {
+//                        angleRadiansY += 2 * Math.PI;
+//                    }
+//                    float angleDegreesY = (float) Math.toDegrees(angleRadiansY);
+//
+                    float sensitivity2 = 0.02f;
+//                    rotationAngleX += angleDegreesX * sensitivity2;
+//                    rotationAngleY += angleDegreesY * sensitivity2;
 
-                    float angleRadiansY = (float) Math.atan2(dx, dy);
-                    if (angleRadiansY < 0) {
-                        angleRadiansY += 2 * Math.PI;
-                    }
-                    float angleDegreesY = (float) Math.toDegrees(angleRadiansY);
+                    float angleDegreesX = dx * sensitivity2; // Rotate around Y-axis based on horizontal movement
+                    float angleDegreesY = dy * sensitivity2; // Rotate around X-axis based on vertical movement
+                    rotationAngleX = (rotationAngleX + angleDegreesY) % 360; // Rotate around X-axis (up/down)
+                    rotationAngleY = (rotationAngleY + angleDegreesX) % 360; // Rotate around Y-axis (left/right)
 
-                    float sensitivity = 0.02f;
-                    rotationAngleX += angleDegreesX * sensitivity;
-                    rotationAngleY += angleDegreesY * sensitivity;
+
 
                     treeModel.setRotationX(rotationAngleX);
                     treeModel.setRotationY(rotationAngleY);
