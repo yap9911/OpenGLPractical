@@ -142,8 +142,9 @@ public class ObjLoader {
                     int vertexIndex = Integer.parseInt(vertexData[0]) - 1;
                     indices.add(vertexIndex);
                     float[] vertex = verticesArrayList.get(vertexIndex);
+                    System.out.println(vertexData.length + " " + verticesArrayList.get(vertexIndex).length);
 
-                    if (vertexData.length >= 3 && verticesArrayList.get(vertexIndex).length < 8) {
+                    if (vertexData.length == 3 && verticesArrayList.get(vertexIndex).length < 8) {
 
                         int texCoordIndex = Integer.parseInt(vertexData[1]) - 1;
                         float[] texCoord = texCoordsArrayList.get(texCoordIndex);
@@ -167,26 +168,47 @@ public class ObjLoader {
                         verticesArrayList.set(vertexIndex, combinedVertex);
 
                     }
+                    else if(vertexData.length == 1 && verticesArrayList.get(vertexIndex).length < 8){
 
+                        int texCoordIndex = vertexIndex;
+                        float[] texCoord = texCoordsArrayList.get(texCoordIndex);
+
+                        int normalIndex = vertexIndex;
+                        float[] normal = normalsArrayList.get(normalIndex);
+
+                        // Create a new array to hold the combined vertex, texture coordinate, and normal
+                        float[] combinedVertex = new float[vertex.length + texCoord.length + normal.length];
+
+                        // Copy the elements from vertex array
+                        System.arraycopy(vertex, 0, combinedVertex, 0, vertex.length);
+
+                        // Copy the elements from texCoord array
+                        System.arraycopy(texCoord, 0, combinedVertex, vertex.length, texCoord.length);
+
+                        // Copy the elements from normal array
+                        System.arraycopy(normal, 0, combinedVertex, vertex.length + texCoord.length, normal.length);
+
+                        // Update the vertex array in the verticesArrayList
+                        verticesArrayList.set(vertexIndex, combinedVertex);
+
+                    }
                 }
             }
         }
 
-        for(float[] vertices : verticesArrayList){
-            for(float vertex : vertices){
-                System.out.print(vertex + " ");
-            }
-            System.out.println(); // Move to the next line after printing all elements of the array
-        }
+//        for(float[] vertices : verticesArrayList){
+//            for(float vertex : vertices){
+//                System.out.print(vertex + " ");
+//            }
+//            System.out.println(); // Move to the next line after printing all elements of the array
+//        }
 
 
         // Calculate the total length needed for the vertices array
         int totalLength = 0;
         for (float[] array : verticesArrayList) {
             totalLength += array.length;
-
         }
-        System.out.println(totalLength);
 
         // Create the vertices array with the calculated length
         float[] verticesArray = new float[totalLength];
@@ -201,7 +223,6 @@ public class ObjLoader {
         // Iterate over the verticesArray and add each element to the vertices ArrayList
         for (float vertex : verticesArray) {
             vertices.add(vertex);
-            System.out.println(vertices.size());
         }
 
         System.out.println("finish obj loader");
