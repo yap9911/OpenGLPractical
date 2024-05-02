@@ -2,12 +2,10 @@ package com.example.openglpractical;
 
 
 import android.content.Context;
-import android.graphics.Camera;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.renderscript.Float3;
 import android.renderscript.Matrix4f;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import java.io.IOException;
@@ -35,7 +33,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
     private static final float ONE_SEC = 1000.0f; // 1 second   //in miliseconds
     private long lastTimeMillis = 0L;
 
-    private Model treeModel;
+    private Model ObjModel;
 
     private float previousX, previousY;
     private float rotationAngleX;
@@ -109,21 +107,21 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                     R.raw.simple_fragment_shader)
         );
 
-        int treeTexture = TextureUtils.loadTexture(context, R.drawable.tree);
+        int Texture = TextureUtils.loadTexture(context, R.drawable.tree);
 
         // Create and configure the model object
         //load materialsmap
         //the model colorspervertices got problem
-        //treeModel = new Model("tree", shader, verticesArray, indicesArray, materialsMap);
-        treeModel = new Model("tree", shader, verticesArray, indicesArray);
+        //Model = new Model("tree", shader, verticesArray, indicesArray, materialsMap);
+        ObjModel = new Model("tree", shader, verticesArray, indicesArray);
 
         // Set the position, rotation, and scale of the model if needed
-        treeModel.setPosition(new Float3(0.0f, 0.0f, 0.0f));
-        treeModel.setRotationX(0.0f);
-        treeModel.setRotationY(0.0f);
-        treeModel.setRotationZ(0.0f);
-        treeModel.setScale(scaleFactor);
-        treeModel.setTexture(treeTexture);
+        ObjModel.setPosition(new Float3(0.0f, 0.0f, 0.0f));
+        ObjModel.setRotationX(0.0f);
+        ObjModel.setRotationY(0.0f);
+        ObjModel.setRotationZ(0.0f);
+        ObjModel.setScale(scaleFactor);
+        ObjModel.setTexture(Texture);
 
         //extract the current time of the system in miliseconds
         lastTimeMillis = System.currentTimeMillis();
@@ -141,13 +139,13 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         System.out.println("on surface changed");
 
-        if(treeModel != null) {
+        if(ObjModel != null) {
             Matrix4f perspective = new Matrix4f();
 
             //perspective setting
             perspective.loadPerspective(85.0f, aspectRatio, 1.0f, 150.0f); //(field of view, aspect ratio, near z, far z)
 
-            treeModel.setProjection(perspective);
+            ObjModel.setProjection(perspective);
         }
     }
 
@@ -164,9 +162,9 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         camera2.translate(0.0f, 0.0f, -6.0f);
         //camera2.rotate(180.0f, 1.0f, 0.0f, 0.0f); // Rotate the camera to view from the side
         //camera2.rotate(180.0f, 0.0f, 1.0f, 0.0f); // Rotate the camera to view from the side
-        treeModel.setCamera(camera2);
+        ObjModel.setCamera(camera2);
 
-        treeModel.draw();
+        ObjModel.draw();
 
     }
 
@@ -212,11 +210,11 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
                     // Translate the model along X and Y axes based on finger movement
                     Float3 newPosition = new Float3(
-                            treeModel.position.x + dx * sensitivity,
-                            treeModel.position.y - dy * sensitivity,
-                            treeModel.position.z
+                            ObjModel.position.x + dx * sensitivity,
+                            ObjModel.position.y - dy * sensitivity,
+                            ObjModel.position.z
                     );
-                    treeModel.setPosition(newPosition);
+                    ObjModel.setPosition(newPosition);
                     // Update previous touch coordinates for translation
                     previousX = x;
                     previousY = y;
@@ -246,7 +244,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                     }
 
                     //System.out.println("Scale Factor: " + scaleFactor);
-                    treeModel.setScale(scaleFactor);
+                    ObjModel.setScale(scaleFactor);
 
                     //rotation
                     float dx = x - previousX;
@@ -272,10 +270,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                     rotationAngleX = (rotationAngleX + angleDegreesY) % 360; // Rotate around X-axis (up/down)
                     rotationAngleY = (rotationAngleY + angleDegreesX) % 360; // Rotate around Y-axis (left/right)
 
-
-
-                    treeModel.setRotationX(rotationAngleX);
-                    treeModel.setRotationY(rotationAngleY);
+                    ObjModel.setRotationX(rotationAngleX);
+                    ObjModel.setRotationY(rotationAngleY);
                 }
                 break;
         }
