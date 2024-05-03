@@ -21,17 +21,12 @@ import com.example.openglpractical.glkit.TextureUtils;
 
 public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
-
     private ObjLoader objLoader;
     private float[] mvpMatrix = new float[16];
 
     private Context context;
 
     private ShaderProgram shader; // Declare as a class-level variable
-
-
-    //animation parameters
-    private static final float ONE_SEC = 1000.0f; // 1 second   //in miliseconds
     private long lastTimeMillis = 0L;
 
     private Model ObjModel;
@@ -40,11 +35,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
     private float rotationAngleX;
     private float rotationAngleY;
     private float scaleFactor = 1.0f;
-    private Float3 translation = new Float3(0.0f, 0.0f, 0.0f);
-
     private static final int INVALID_POINTER_ID = -1;
-    private float previousX2, previousY2;
-    private int activePointerId1 = INVALID_POINTER_ID, activePointerId2 = INVALID_POINTER_ID;
+    private int activePointerId1 = INVALID_POINTER_ID;
     private float initialDistance = 0.0f;
 
     @Override
@@ -55,7 +47,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         try {
 
             System.out.println("in openglrenderer obj loader");
-            objLoader = new ObjLoader(context, "tree.obj", "tree.mtl");
+            objLoader = new ObjLoader(context, "mushroom.obj", "mushroom.mtl");
             System.out.println("finish Objloader class");
 
             List<Float> verticesList = objLoader.getVertices();
@@ -65,16 +57,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
             // Convert lists to arrays
             float[] verticesArray = new float[verticesList.size()];
             for (int i = 0; i < verticesList.size(); i++) {
-
                 verticesArray[i] = verticesList.get(i);
-                //System.out.println(verticesArray[i]);
-
             }
 
             short[] indicesArray = new short[indicesList.size()];
             for (int i = 0; i < indicesList.size(); i++) {
                 indicesArray[i] = indicesList.get(i).shortValue();
-                //System.out.println(indicesArray[i]);
             }
 
             System.out.println("finish OpenglRenderer");
@@ -109,13 +97,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                     R.raw.simple_fragment_shader)
         );
 
-        int Texture = TextureUtils.loadTexture(context, R.drawable.tree);
+        int Texture = TextureUtils.loadTexture(context, R.drawable.mushroom);
 
         // Create and configure the model object
-        //load materialsmap
-        //the model colorspervertices got problem
-        //Model = new Model("tree", shader, verticesArray, indicesArray, materialsMap);
-        ObjModel = new Model("tree", shader, verticesArray, indicesArray, materialsMap);
+        // load materialsmap
+
+        ObjModel = new Model("mushroom", shader, verticesArray, indicesArray, materialsMap);
 
         // Set the position, rotation, and scale of the model if needed
         ObjModel.setPosition(new Float3(0.0f, 0.0f, 0.0f));
@@ -162,8 +149,6 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
         Matrix4f camera2 = new Matrix4f();
         camera2.translate(0.0f, 0.0f, -6.0f);
-        //camera2.rotate(180.0f, 1.0f, 0.0f, 0.0f); // Rotate the camera to view from the side
-        //camera2.rotate(180.0f, 0.0f, 1.0f, 0.0f); // Rotate the camera to view from the side
         ObjModel.setCamera(camera2);
 
         ObjModel.draw();
@@ -204,12 +189,6 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
                     float sensitivity = 0.05f;
 
-
-//                    System.out.println("treeModel.camera");
-//                    System.out.println(treeModel.position.x);
-//                    System.out.println(treeModel.camera);
-
-
                     // Translate the model along X and Y axes based on finger movement
                     Float3 newPosition = new Float3(
                             ObjModel.position.x + dx * sensitivity,
@@ -245,27 +224,13 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
                         scaleFactor = maxScaleFactor;
                     }
 
-                    //System.out.println("Scale Factor: " + scaleFactor);
                     ObjModel.setScale(scaleFactor);
 
                     //rotation
                     float dx = x - previousX;
                     float dy = y - previousY;
-//                    float angleRadiansX = (float) Math.atan2(dy, dx);
-//                    if (angleRadiansX < 0) {
-//                        angleRadiansX += 2 * Math.PI;
-//                    }
-//                    float angleDegreesX = (float) Math.toDegrees(angleRadiansX);
-//
-//                    float angleRadiansY = (float) Math.atan2(dx, dy);
-//                    if (angleRadiansY < 0) {
-//                        angleRadiansY += 2 * Math.PI;
-//                    }
-//                    float angleDegreesY = (float) Math.toDegrees(angleRadiansY);
-//
+
                     float sensitivity2 = 0.02f;
-//                    rotationAngleX += angleDegreesX * sensitivity2;
-//                    rotationAngleY += angleDegreesY * sensitivity2;
 
                     float angleDegreesX = dx * sensitivity2; // Rotate around Y-axis based on horizontal movement
                     float angleDegreesY = dy * sensitivity2; // Rotate around X-axis based on vertical movement

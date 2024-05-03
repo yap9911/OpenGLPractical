@@ -1,4 +1,4 @@
-package com.example.openglpractical;//package com.example.openglpractical;
+package com.example.openglpractical;
 import android.content.Context;
 import android.content.res.AssetManager;
 
@@ -18,7 +18,6 @@ public class ObjLoader {
     private List<float[]> normalsArrayList = new ArrayList<>();
     private List<Integer> indices = new ArrayList<>();
     private Map<String, Material> materials = new HashMap<>();
-
     private static Context context;
 
     public ObjLoader(Context context, String objFilePath, String mtlFilePath) throws IOException {
@@ -37,15 +36,14 @@ public class ObjLoader {
         InputStream is = am.open(mtlFilePath);
 
         InputStreamReader isr = new InputStreamReader(is);
+
         // Wrap the InputStreamReader with a BufferedReader for efficient reading
         BufferedReader reader = new BufferedReader(isr);
         Material currentMaterial = null;
-        //System.out.println(reader);
 
         String line;
         while ((line = reader.readLine()) != null) {
             line = line.trim();
-            //System.out.println(line);
 
             // Skip comments and empty lines
             if (line.isEmpty() || line.startsWith("#")) {
@@ -83,10 +81,7 @@ public class ObjLoader {
                     currentMaterial.setDissolve(Float.parseFloat(parts[1]));
                 } else if (parts[0].equals("illum")) {
                     currentMaterial.setIlluminationModel(Integer.parseInt(parts[1]));
-                } else if (parts[0].equals("map_Kd")) {
-                    // Handle texture map file (if needed)
                 }
-                // Add more properties as needed
             }
         }
         System.out.println("finish mtl loader");
@@ -102,17 +97,14 @@ public class ObjLoader {
         InputStream is = am.open(objFilePath);
 
         InputStreamReader isr = new InputStreamReader(is);
+
         // Wrap the InputStreamReader with a BufferedReader for efficient reading
         BufferedReader reader = new BufferedReader(isr);
-        //System.out.println(reader);
 
-        //load the .mtl file for color //to be done
-        Material currentMaterial = null;
 
         String line;
         while ((line = reader.readLine()) != null) {
             line = line.trim();
-            //System.out.println(line);
 
             String[] parts = line.split("\\s+");
 
@@ -152,9 +144,6 @@ public class ObjLoader {
                 // Add the array to the ArrayList
                 normalsArrayList.add(normal);
 
-            } else if (parts[0].equals("usemtl")) {
-                String materialName = parts[1];
-                currentMaterial = materials.get(materialName);
             } else if (parts[0].equals("f")) {
                 for (int i = 1; i < parts.length; i++) {
                     String[] vertexData = parts[i].split("/");
@@ -215,14 +204,6 @@ public class ObjLoader {
             }
         }
 
-//        for(float[] vertices : verticesArrayList){
-//            for(float vertex : vertices){
-//                System.out.print(vertex + " ");
-//            }
-//            System.out.println(); // Move to the next line after printing all elements of the array
-//        }
-
-
         // Calculate the total length needed for the vertices array
         int totalLength = 0;
         for (float[] array : verticesArrayList) {
@@ -251,6 +232,7 @@ public class ObjLoader {
 
     // Define Material class as needed to store material properties
     static class Material {
+
         public String name;
         public float[] ambientColor = { 0.0f, 0.0f, 0.0f };
         public float[] diffuseColor = { 1.0f, 1.0f, 1.0f };
@@ -297,8 +279,6 @@ public class ObjLoader {
         public void setIlluminationModel(int illuminationModel) {
             this.illuminationModel = illuminationModel;
         }
-
-        // Add getters as needed
     }
 
     // Getter methods for accessing loaded data
@@ -314,26 +294,5 @@ public class ObjLoader {
         return materials;
     }
 
-//    public static void main(String[] args) {
-//        try {
-//            System.out.println("in oObjLoader main");
-//
-//            ObjLoader objLoader = new ObjLoader(context, "tree.obj", "tree.mtl");
-//            List<Float> vertices = objLoader.getVertices();
-//            List<Float> texCoords = objLoader.getTexCoords();
-//            List<Float> normals = objLoader.getNormals();
-//            List<Integer> indices = objLoader.getIndices();
-//            Map<String, Material> materials = objLoader.getMaterials();
-//
-//            // Use the loaded data as needed
-//            System.out.println("Vertices: " + vertices);
-//            System.out.println("TexCoords: " + texCoords);
-//            System.out.println("Normals: " + normals);
-//            System.out.println("Indices: " + indices);
-//            System.out.println("Materials: " + materials);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
 

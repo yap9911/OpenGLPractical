@@ -19,9 +19,6 @@ public class Model {
     private static final int COORDS_PER_VERTEX = 3;
     private static final int TEXCOORDS_PER_VERTEX = 2;
     private static final int NORMALS_PER_VERTEX = 3;
-
-    // private static final int COLORS_PER_VERTEX = 4;
-
     private static final int SIZE_OF_FLOAT = 4;
     private static final int SIZE_OF_SHORT = 2;
 
@@ -34,7 +31,6 @@ public class Model {
     private FloatBuffer vertexBuffer;
     private int vertexBufferId;
     private int vertexStride;
-
     private ShortBuffer indexBuffer;
     protected int indexBufferId;
 
@@ -55,7 +51,6 @@ public class Model {
     private int textureName = 0;
 
     //constructor
-    //public Model(String name, ShaderProgram shader, float[] vertices, short[] indices, Map<String, ObjLoader.Material> materials) {
     public Model(String name, ShaderProgram shader, float[] vertices, short[] indices, Map<String, ObjLoader.Material> materials ) {
             System.out.println("in Model Class creating model");
         //initialization
@@ -100,8 +95,8 @@ public class Model {
     }
 
     public void setCamera(Matrix4f mat) {
-        camera.load(mat);  //to load martix (means multipying the new input to the camera)
-        //like camera = mat
+        camera.load(mat);  // to load martix (means multipying the new input to the camera)
+                               // like camera = mat
     }
 
 
@@ -188,10 +183,6 @@ public class Model {
         shader.enableVertexAttribute("a_Position");
         shader.setVertexAttribute("a_Position", COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, 0);
 
-        // shader.enableVertexAttribute("a_Color");
-        // shader.setVertexAttribute("a_Color", COLORS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride,
-        //        COORDS_PER_VERTEX * SIZE_OF_FLOAT);
-
         shader.enableVertexAttribute("a_TexCoord");
         shader.setVertexAttribute("a_TexCoord", TEXCOORDS_PER_VERTEX, GLES20.GL_FLOAT,
                 false, vertexStride, (COORDS_PER_VERTEX ) * SIZE_OF_FLOAT);
@@ -210,7 +201,6 @@ public class Model {
                 0); // offset
 
         shader.disableVertexAttribute("a_Position");
-        // shader.disableVertexAttribute("a_Color");
         shader.disableVertexAttribute("a_TexCoord");
         shader.disableVertexAttribute("a_Normal");
         GLES30.glBindVertexArray(0); // Unbind VAO
@@ -231,14 +221,6 @@ public class Model {
             shader.setUniformf("u_Material.Dissolve", material.dissolve);
             shader.setUniformf("u_Light.Direction", 0.0f, -0.5f, -1.0f);
         }
-
-//        // Set other material-specific properties as needed
-//        shader.setUniformf("u_Light.Color", 1.0f, 1.0f, 1.0f);
-//        shader.setUniformf("u_Light.AmbientIntensity", 0.0f);
-//        shader.setUniformf("u_Light.DiffuseIntensity", 0.64f);
-//        shader.setUniformf("u_Light.Direction", 0.0f, -0.3f, -1.2f);
-//        shader.setUniformf("u_Light.SpecularIntensity", 0.5f);
-//        shader.setUniformf("u_Light.Shininess", 9.6078431f);
     }
 
 }

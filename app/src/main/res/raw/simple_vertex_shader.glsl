@@ -2,7 +2,6 @@ uniform highp mat4 u_ProjectionMatrix;
 uniform highp mat4 u_ModelViewMatrix;
 
 attribute vec4 a_Position; // Per-vertex position information we will pass in. (x, y, z)
-//attribute vec4 a_Color; // Per-vertex color information we will pass in. (R, G, B, alpha)
 attribute vec2 a_TexCoord; // input for texture coordinate (u,v)
 attribute vec3 a_Normal; // input for normal vector
 
@@ -14,8 +13,6 @@ varying lowp vec3 frag_Position;
 // The entry point for our vertex shader.
 void main()
 {
-    // Pass through the color.
-    // v_Color = a_Color;
 
     frag_Normal = (u_ModelViewMatrix * vec4(a_Normal, 0.0)).xyz;
     frag_Position = (u_ModelViewMatrix * a_Position).xyz;

@@ -34,7 +34,6 @@ public class OpenGLView extends GLSurfaceView {
         renderer = new OpenGLRenderer(context); // Create your renderer
 
         // set the Renderer for drawing on the GLSurfaceView
-        //setRenderer(new OpenGLRenderer(getContext()));
         setRenderer(renderer); // Set the renderer for this view
 
 
