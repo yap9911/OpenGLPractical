@@ -22,8 +22,6 @@ import com.example.openglpractical.glkit.TextureUtils;
 public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
     private ObjLoader objLoader;
-    private float[] mvpMatrix = new float[16];
-
     private Context context;
 
     private ShaderProgram shader; // Declare as a class-level variable
