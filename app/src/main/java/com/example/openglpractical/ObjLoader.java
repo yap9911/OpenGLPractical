@@ -150,7 +150,6 @@ public class ObjLoader {
                     int vertexIndex = Integer.parseInt(vertexData[0]) - 1;
                     indices.add(vertexIndex);
                     float[] vertex = verticesArrayList.get(vertexIndex);
-                    System.out.println(vertexData.length + " " + verticesArrayList.get(vertexIndex).length);
 
                     if (vertexData.length == 3 && verticesArrayList.get(vertexIndex).length < 8) {
 
