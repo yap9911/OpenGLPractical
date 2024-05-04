@@ -60,9 +60,9 @@ public class Model {
         this.indices = Arrays.copyOfRange(indices, 0, indices.length);
         this.materials = materials;
 
+        setupVAO();
         setupVertexBuffer();
         setupIndexBuffer();
-        setupVAO();
     }
 
 
