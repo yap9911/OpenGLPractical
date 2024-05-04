@@ -60,9 +60,9 @@ public class Model {
         this.indices = Arrays.copyOfRange(indices, 0, indices.length);
         this.materials = materials;
 
-        setupVAO();
         setupVertexBuffer();
         setupIndexBuffer();
+        setupVAO();
     }
 
 
@@ -141,9 +141,6 @@ public class Model {
         GLES30.glVertexAttribPointer(0, COORDS_PER_VERTEX, GLES30.GL_FLOAT, false, vertexStride, 0);
         GLES30.glEnableVertexAttribArray(0);
 
-        // Bind index buffer
-        GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-
         // Unbind VAO
         GLES30.glBindVertexArray(0);
     }
@@ -203,7 +200,6 @@ public class Model {
         shader.disableVertexAttribute("a_Position");
         shader.disableVertexAttribute("a_TexCoord");
         shader.disableVertexAttribute("a_Normal");
-        GLES30.glBindVertexArray(0); // Unbind VAO
         shader.end();
     }
 
